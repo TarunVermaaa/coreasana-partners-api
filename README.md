@@ -10,6 +10,8 @@ It is one of three repositories:
 | [coreasana-partners-app](../partners-app) | React Native (Expo) app for partners. Join, share a code, track earnings and payouts. Ships as an APK. |
 | [coreasana-partners-dashboard](../partners-dashboard) | React web dashboard for the affiliate team and finance. Review and release commissions, run payouts. |
 
+**Walkthrough of the happy path (5 minutes):** [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
+
 ---
 
 ## What v1 does, and why

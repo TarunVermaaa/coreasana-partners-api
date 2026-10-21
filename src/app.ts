@@ -16,7 +16,7 @@ export function createApp() {
   app.use(helmet());
   // Browsers: only the dashboard (and the app's web preview) may call the API. The native app
   // isn't a browser, so CORS doesn't apply to it.
-  app.use(cors({ origin: corsOrigins, maxAge: 600 }));
+  app.use(cors({ origin: corsOrigins, maxAge: 600, exposedHeaders: ['Content-Disposition'] }));
   app.use(
     express.json({
       limit: '200kb',

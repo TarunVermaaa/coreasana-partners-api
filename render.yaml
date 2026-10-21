@@ -1,0 +1,34 @@
+# Render Blueprint for the API. MongoDB runs on Atlas (free M0 cluster): paste its connection
+# string into MONGODB_URI when Render asks. Deploy: Render dashboard → New → Blueprint → this repo.
+services:
+  - type: web
+    name: coreasana-partners-api
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false # Atlas connection string, entered in the dashboard
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WEBHOOK_SECRET
+        generateValue: true
+      - key: PII_ENCRYPTION_KEY
+        sync: false # 64 hex characters: openssl rand -hex 32
+      - key: PUBLIC_API_URL
+        sync: false # this service's URL, e.g. https://coreasana-partners-api.onrender.com
+      - key: STORE_URL
+        value: https://coreasana.com
+      - key: CORS_ORIGINS
+        sync: false # the dashboard's URL
+      - key: SEED_ON_BOOT
+        value: "true"
+      - key: DEMO_TOOLS
+        value: "true"

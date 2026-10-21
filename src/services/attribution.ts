@@ -105,9 +105,11 @@ export async function ingestOrder(
             tax: input.tax,
             total: input.total,
             source: opts.source ?? 'webhook',
+            createdAt: now,
+            updatedAt: now,
           },
         ],
-        { session },
+        { session, timestamps: false },
       );
       const [commission] = await Commission.create(
         [
@@ -131,9 +133,11 @@ export async function ingestOrder(
                 note: flags.length ? `Needs review: ${flags.map((f) => f.message).join('; ')}` : `On hold for the ${settings.holdDays}-day return window`,
               },
             ],
+            createdAt: now,
+            updatedAt: now,
           },
         ],
-        { session },
+        { session, timestamps: false },
       );
       await record(
         {

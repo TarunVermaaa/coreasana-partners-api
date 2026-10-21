@@ -231,6 +231,8 @@ export async function seed(now = new Date()) {
       if (ready.length) {
         try {
           const batch = await createBatch({ affiliateIds: ready.map(String), actor: financeActor, now: at(day, 11) });
+          // Timestamps are set by Mongoose at write time; backdate them to when finance ran the batch.
+          await Payout.collection.updateOne({ _id: batch._id }, { $set: { createdAt: at(day, 11), updatedAt: at(day, 11) } });
           const isLast = istDay(day) === lastFriday;
           // Priya (the demo partner) is always paid; of the others, a bank transfer bounces
           // and up to two payments wait for their UTR.

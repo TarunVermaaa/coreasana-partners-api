@@ -215,7 +215,6 @@ adminRouter.post('/demo/orders', ops, validate('body', DemoOrderSchema), async (
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const { customerDiscountPct } = await getSettings();
   const discount = Math.round((subtotal * customerDiscountPct) / 100);
-  const taxable = subtotal - discount;
   const result = await ingestOrder(
     {
       id: `CA-DEMO-${Date.now().toString(36).toUpperCase()}`,
@@ -225,9 +224,10 @@ adminRouter.post('/demo/orders', ops, validate('body', DemoOrderSchema), async (
       items,
       subtotal,
       discount,
+      // Prices on the store include GST, so the demo order has no separate tax line.
       shipping: 0,
-      tax: Math.round(taxable * 0.12),
-      total: taxable + Math.round(taxable * 0.12),
+      tax: 0,
+      total: subtotal - discount,
     },
     { source: 'demo', actor: actorOf(req) },
   );

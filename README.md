@@ -7,8 +7,8 @@ It is one of three repositories:
 | Repo | What it is |
 | --- | --- |
 | **coreasana-partners-api** (this one) | Node.js + Express + MongoDB. Orders, commissions, payouts, auth. |
-| [coreasana-partners-app](../partners-app) | React Native (Expo) app for partners. Join, share a code, track earnings and payouts. Ships as an APK. |
-| [coreasana-partners-dashboard](../partners-dashboard) | React web dashboard for the affiliate team and finance. Review and release commissions, run payouts. |
+| [coreasana-partners-app](https://github.com/TarunVermaaa/coreasana-partners-app) | React Native (Expo) app for partners. Join, share a code, track earnings and payouts. Ships as an APK. |
+| [coreasana-partners-dashboard](https://github.com/TarunVermaaa/coreasana-partners-dashboard) | React web dashboard for the affiliate team and finance. Review and release commissions, run payouts. |
 
 **Walkthrough of the happy path (5 minutes):** [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
 

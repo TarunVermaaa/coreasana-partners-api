@@ -24,7 +24,11 @@ export const IncomingOrderSchema = z.object({
   shipping: paise.default(0),
   tax: paise.default(0),
   total: paise,
-});
+})
+  .refine((o) => o.discount <= o.subtotal, { path: ['discount'], message: 'Discount cannot be more than the subtotal' })
+  // A little clock skew between the store and the API is fine; a date in the future would hold the
+  // commission forever.
+  .refine((o) => o.placedAt.getTime() <= Date.now() + 10 * 60_000, { path: ['placedAt'], message: 'Order date is in the future' });
 export type IncomingOrder = z.infer<typeof IncomingOrderSchema>;
 
 export const IncomingRefundSchema = z.object({

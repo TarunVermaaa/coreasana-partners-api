@@ -59,6 +59,15 @@ describe('partner signup', () => {
     expect(res.body.affiliate).not.toHaveProperty('passwordHash');
   });
 
+  it('accepts the ways people type Indian mobile numbers, and rejects ones that cannot exist', async () => {
+    const ok = await http().post('/api/v1/auth/affiliate/signup').send({ ...valid, phone: '+91 0 98100 99887' });
+    expect(ok.status).toBe(201);
+    expect(ok.body.affiliate.phone).toBe('+919810099887');
+    const fake = await http().post('/api/v1/auth/affiliate/signup').send({ ...valid, email: 'fake@example.com', phone: '0000000000', code: 'FAKE10' });
+    expect(fake.status).toBe(400);
+    expect(fake.body.error.details[0].field).toBe('phone');
+  });
+
   it('reports every field problem at once', async () => {
     const res = await http().post('/api/v1/auth/affiliate/signup').send({ name: 'Z', email: 'nope', phone: '12', password: 'x', audience: 'guru', code: 'a' });
     expect(res.status).toBe(400);
@@ -96,6 +105,15 @@ describe('payout details', () => {
     expect(ok.body.payoutMethod).toEqual({ type: 'bank', accountName: 'Zoya Mirza', accountNumberLast4: '5678', ifsc: 'HDFC0001234' });
     expect(ok.body.panLast4).toBe('234F');
     expect(JSON.stringify(ok.body)).not.toContain('50200012345678');
+  });
+});
+
+describe('request limits', () => {
+  it('answers 413 for oversized bodies and 400 for an empty settings change', async () => {
+    const big = await http().post('/api/v1/auth/affiliate/login').set('content-type', 'application/json').send(JSON.stringify({ email: 'a'.repeat(210_000), password: 'x' }));
+    expect(big.status).toBe(413);
+    const admin = await staffToken('admin');
+    expect((await http().patch('/api/v1/admin/settings').set(bearer(admin)).send({})).status).toBe(400);
   });
 });
 

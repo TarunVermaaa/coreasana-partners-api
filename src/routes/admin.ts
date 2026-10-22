@@ -170,7 +170,7 @@ const SettingsSchema = z.object({
   tdsRatePct: z.number().min(0).max(30).optional(),
   tdsNoPanRatePct: z.number().min(0).max(30).optional(),
   highValueOrderInr: z.number().min(0).optional(),
-});
+}).refine((b) => Object.keys(b).length > 0, { message: 'Change at least one setting' });
 adminRouter.patch('/settings', requireRole('admin'), validate('body', SettingsSchema), async (req, res) => {
   const b = valid<z.infer<typeof SettingsSchema>>(req, 'body');
   const set: Record<string, number> = {};
@@ -204,7 +204,10 @@ const PRODUCTS = [
 ];
 const DemoOrderSchema = z.object({
   code: z.string().trim().min(4).max(12),
-  items: z.array(z.object({ name: z.string().min(1), qty: z.number().int().min(1).max(20), price: z.number().int().min(0) })).optional(),
+  items: z
+    .array(z.object({ name: z.string().trim().min(1).max(80), qty: z.number().int().min(1).max(20), price: z.number().int().min(0).max(1_000_000) }))
+    .max(10)
+    .optional(),
   customerEmail: z.string().trim().optional(),
   placedDaysAgo: z.number().min(0).max(90).default(0),
 });

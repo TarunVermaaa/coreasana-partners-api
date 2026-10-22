@@ -38,7 +38,7 @@ publicRouter.get('/codes/:code/availability', codeLimiter, async (req, res) => {
 const SignupSchema = z.object({
   name: z.string().trim().min(2, 'Enter your full name').max(80),
   email: z.string().trim().toLowerCase().pipe(z.email('Enter a valid email')),
-  phone: z.string().trim().min(10, 'Enter a 10-digit mobile number').max(16),
+  phone: z.string().trim().min(10, 'Enter a 10-digit mobile number').max(20, 'Enter a 10-digit mobile number'),
   password: z.string().min(8, 'Use at least 8 characters').max(72),
   audience: z.enum(AUDIENCES, { error: 'Choose how you will share Core Asana' }),
   code: z.string().trim().min(4, 'Use 4–12 letters or numbers').max(12, 'Use 4–12 letters or numbers'),

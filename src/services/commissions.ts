@@ -80,11 +80,15 @@ export async function reviewCommissions(params: {
   actor: Actor;
   now?: Date;
 }) {
-  const { ids, decision, actor } = params;
+  const { decision, actor } = params;
+  const ids = [...new Map(params.ids.map((id) => [String(id), id])).values()];
   const now = params.now ?? new Date();
   const note = params.note?.trim() || undefined;
   const docs = await Commission.find({ _id: { $in: ids } }, { status: 1, holdUntil: 1, amount: 1, kind: 1 }).lean();
   if (docs.length !== ids.length) throw ApiError.notFound('One or more commissions');
+  if (docs.some((d) => d.kind !== 'sale')) {
+    throw ApiError.conflict('Clawbacks recover money from refunded orders and cannot be approved or rejected here.');
+  }
 
   const review = { decision, note, by: actor, at: now };
   let updated = 0;

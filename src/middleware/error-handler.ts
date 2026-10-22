@@ -18,6 +18,14 @@ export function errorHandler(err: unknown, req: Request, res: Response, _next: N
   if ((err as { type?: string }).type === 'entity.parse.failed') {
     return res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: 'The request body is not valid JSON' } });
   }
+  // Other body-parser rejections (e.g. 413 payload too large) keep their status
+  const status = (err as { status?: number; expose?: boolean }).status;
+  if (status && status >= 400 && status < 500 && (err as { expose?: boolean }).expose) {
+    const tooLarge = status === 413;
+    return res.status(status).json({
+      error: { code: 'VALIDATION_ERROR', message: tooLarge ? 'The request is too large' : 'The request could not be read' },
+    });
+  }
   // An id that isn't an ObjectId can't match anything
   if (err instanceof mongoose.Error.CastError) {
     return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Not found' } });

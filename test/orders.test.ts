@@ -51,6 +51,16 @@ describe('order webhook', () => {
     expect(await Order.countDocuments()).toBe(0);
   });
 
+  it('rejects orders dated in the future or discounted below zero', async () => {
+    const { affiliate } = await makeAffiliate();
+    const future = await webhook({ event: 'order.created', order: orderFor(affiliate.code, { placedAt: new Date('2099-01-01') }) });
+    expect(future.status).toBe(400);
+    expect(future.body.error.details[0].field).toBe('order.placedAt');
+    const overDiscount = await webhook({ event: 'order.created', order: orderFor(affiliate.code, { discount: 400_000 }) });
+    expect(overDiscount.status).toBe(400);
+    expect(await Order.countDocuments()).toBe(0);
+  });
+
   it('rejects malformed payloads with field errors', async () => {
     const res = await webhook({ event: 'order.created', order: { id: 'X1', code: 'ABCD' } });
     expect(res.status).toBe(400);

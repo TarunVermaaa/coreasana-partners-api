@@ -32,7 +32,7 @@ function codeProblem(code: string): string | null {
 
 /** Is a code free, and if not, what similar ones are? Suggestions are checked against the database. */
 export async function codeAvailability(raw: string) {
-  const code = normaliseCode(raw);
+  const code = normaliseCode(raw.slice(0, 40));
   const problem = codeProblem(code);
   const taken = problem ? false : Boolean(await Affiliate.exists({ code }));
   const available = !problem && !taken;
@@ -49,8 +49,11 @@ export async function codeAvailability(raw: string) {
 
 // ---------- Signup / login ----------
 export function normalisePhone(raw: string) {
-  const digits = raw.replace(/\D/g, '').replace(/^(91|0)(?=\d{10}$)/, '');
-  return digits.length === 10 ? `+91${digits}` : null;
+  let digits = raw.replace(/\D/g, '');
+  if (digits.length > 10 && digits.startsWith('91')) digits = digits.slice(2); // +91 / 91 prefix
+  digits = digits.replace(/^0+(?=\d{10}$)/, ''); // trunk 0
+  // Indian mobile numbers are 10 digits starting with 6–9.
+  return /^[6-9]\d{9}$/.test(digits) ? `+91${digits}` : null;
 }
 
 export async function signup(input: {

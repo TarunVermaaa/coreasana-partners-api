@@ -128,6 +128,23 @@ describe('payout batches', () => {
 });
 
 describe('commission review', () => {
+  it('treats repeated ids as one, and refuses to waive a clawback', async () => {
+    const p = await readyPartner();
+    const [c] = await Commission.find({ affiliateId: p.affiliate._id }).lean();
+    const res = await reviewCommissions({ ids: [c._id, c._id], decision: 'reject', note: 'Test order', actor, now: AFTER_HOLD });
+    expect(res.updated).toBe(1);
+
+    const order = orderFor(p.affiliate.code, { placedAt: PLACED });
+    await ingestOrder(order);
+    await ingestOrder(orderFor(p.affiliate.code, { placedAt: PLACED }));
+    await releaseDue(AFTER_HOLD);
+    const batch = await createBatch({ affiliateIds: [String(p.affiliate._id)], actor, now: FRIDAY });
+    await markItemPaid({ payoutId: String(batch._id), itemId: String(batch.items[0]._id), utr: 'ICICN26268000111', actor });
+    await ingestRefund({ id: order.id, refundedAmount: order.total });
+    const claw = await Commission.findOne({ kind: 'clawback' }).lean();
+    await expect(reviewCommissions({ ids: [claw!._id], decision: 'reject', note: 'forgive it', actor })).rejects.toMatchObject({ status: 409 });
+  });
+
   it('needs a note to approve before the return window ends, and to reject', async () => {
     const { affiliate } = await makeAffiliate();
     await ingestOrder(orderFor(affiliate.code, { placedAt: new Date('2026-10-20T10:00:00Z') }));

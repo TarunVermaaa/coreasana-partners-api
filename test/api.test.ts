@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { Affiliate } from '../src/models/affiliate.js';
 import { ClickDay } from '../src/models/misc.js';
 import { ingestOrder } from '../src/services/attribution.js';
 import { http, makeAffiliate, orderFor, staffToken } from './helpers.js';
@@ -87,6 +88,16 @@ describe('partner signup', () => {
     const res = await http().get('/api/v1/codes/priya10/availability');
     expect(res.body).toMatchObject({ code: 'PRIYA10', available: false });
     expect(res.body.suggestions).toEqual(['PRIYA11', 'PRIYA12', 'PRIYA26']);
+  });
+});
+
+describe('paused partners', () => {
+  it('can still read their earnings but cannot change payout details', async () => {
+    const { affiliate, token } = await makeAffiliate();
+    await Affiliate.updateOne({ _id: affiliate._id }, { status: 'suspended' });
+    expect((await http().get('/api/v1/me/summary').set(bearer(token))).status).toBe(200);
+    const res = await http().put('/api/v1/me/payout-method').set(bearer(token)).send({ type: 'upi', upiId: 'someone@okaxis' });
+    expect(res.status).toBe(403);
   });
 });
 

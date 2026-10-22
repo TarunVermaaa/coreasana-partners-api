@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import { ApiError } from '../lib/errors.js';
 import { auth, requireAuth, requireRole } from '../middleware/auth.js';
 import { valid, validate } from '../middleware/validate.js';
 import { getAffiliate, listCommissions, payoutsFor, setPayoutMethod, summary, updateProfile, type PayoutMethodInput } from '../services/affiliates.js';
@@ -8,6 +9,15 @@ import { affiliateDto } from '../services/dto.js';
 /** Everything a signed-in partner can see and change — always scoped to their own id. */
 export const meRouter = Router();
 meRouter.use(requireAuth, requireRole('affiliate'));
+
+// A paused partner can still see what they earned and were paid, but can't change anything:
+// their session may predate the pause, so this is checked on every write.
+meRouter.use(async (req, _res, next) => {
+  if (req.method === 'GET') return next();
+  const a = await getAffiliate(auth(req).id);
+  if (a.status !== 'active') return next(ApiError.forbidden('This partner account is paused. Write to partners@coreasana.com.'));
+  next();
+});
 
 meRouter.get('/', async (req, res) => {
   res.json(affiliateDto(await getAffiliate(auth(req).id)));

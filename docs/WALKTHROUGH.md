@@ -6,7 +6,7 @@ You need:
 - the **app**: the [APK](https://github.com/TarunVermaaa/coreasana-partners-app/releases/latest) on an Android phone, or `npx expo start --web` in `partners-app`
 - the **dashboard**: https://coreasana-partners-dashboard.onrender.com, or `npm run dev` in `partners-dashboard`
 
-A 74-second screen recording of exactly this flow (app and dashboard side by side) is attached to the [app release](https://github.com/TarunVermaaa/coreasana-partners-app/releases/latest).
+Prefer to watch? A [3-minute video tutorial](https://github.com/TarunVermaaa/coreasana-partners-app/releases/download/v1.0.0/core-asana-partners-tutorial.mp4) covers the same flow with subtitles, flowcharts and arrows.
 
 ## 1. A teacher joins (app, about 1 minute)
 

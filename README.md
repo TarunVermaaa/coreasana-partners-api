@@ -20,7 +20,7 @@ It is one of three repositories:
 
 Demo logins use the password `Demo@1234`: `ops@partners.demo`, `finance@partners.demo`, `admin@partners.demo` (dashboard) and `priya@partners.demo` (app). The servers are on Render's free plan, so the first request after a quiet spell can take about a minute while the API wakes up.
 
-**Walkthrough of the happy path (5 minutes):** [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
+**Walkthrough of the happy path (5 minutes):** [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md), or watch the [3-minute video tutorial](https://github.com/TarunVermaaa/coreasana-partners-app/releases/download/v1.0.0/core-asana-partners-tutorial.mp4).
 
 ---
 

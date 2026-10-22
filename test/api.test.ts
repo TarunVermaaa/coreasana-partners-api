@@ -91,6 +91,26 @@ describe('partner signup', () => {
   });
 });
 
+describe('stale sessions', () => {
+  it('signs out a partner whose account no longer exists instead of failing with 404', async () => {
+    const { affiliate, token } = await makeAffiliate();
+    await Affiliate.deleteOne({ _id: affiliate._id });
+    const res = await http().get('/api/v1/me').set(bearer(token));
+    expect(res.status).toBe(401);
+  });
+});
+
+describe('earnings calculator', () => {
+  it('uses the median order, so one huge order does not inflate the promise', async () => {
+    const { affiliate } = await makeAffiliate();
+    const placedAt = new Date(Date.now() - 86_400_000);
+    for (let i = 0; i < 6; i++) await ingestOrder(orderFor(affiliate.code, { placedAt }));
+    await ingestOrder(orderFor(affiliate.code, { placedAt, subtotal: 50_000_000, discount: 0, total: 50_000_000, items: [{ name: 'Bulk', qty: 1, price: 50_000_000 }] }));
+    const res = await http().get('/api/v1/program');
+    expect(res.body.averageOrderValue).toBe(269_000);
+  });
+});
+
 describe('paused partners', () => {
   it('can still read their earnings but cannot change payout details', async () => {
     const { affiliate, token } = await makeAffiliate();

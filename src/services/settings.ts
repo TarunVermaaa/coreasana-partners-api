@@ -21,13 +21,20 @@ export async function getSettings(session?: ClientSession): Promise<ProgramSetti
 
 const FALLBACK_AOV = 200_000; // ₹2,000 — roughly the middle of Core Asana's bestsellers
 
-/** Average order value over the last 90 days; powers the earnings calculator in the app. */
+/**
+ * Typical order value over the last 90 days, for the earnings calculator in the app.
+ * The median, not the mean: one bulk studio order shouldn't promise every new teacher lakhs a month.
+ */
 async function averageOrderValue(now: Date): Promise<number> {
-  const [row] = await Order.aggregate<{ avg: number }>([
-    { $match: { placedAt: { $gte: addDays(now, -90) }, status: { $ne: 'refunded' } } },
-    { $group: { _id: null, avg: { $avg: '$total' } } },
-  ]);
-  return row ? Math.round(row.avg / 100) * 100 : FALLBACK_AOV;
+  const rows = await Order.find({ placedAt: { $gte: addDays(now, -90), $lte: now }, status: { $ne: 'refunded' } }, { total: 1, _id: 0 })
+    .sort({ placedAt: -1 })
+    .limit(1000)
+    .lean();
+  if (rows.length < 5) return FALLBACK_AOV;
+  const totals = rows.map((r) => r.total).sort((a, b) => a - b);
+  const mid = Math.floor(totals.length / 2);
+  const median = totals.length % 2 ? totals[mid] : (totals[mid - 1] + totals[mid]) / 2;
+  return Math.round(median / 100) * 100;
 }
 
 /** The public program terms shown before signup. */

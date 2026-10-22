@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { ApiError } from '../lib/errors.js';
+import { Affiliate } from '../models/affiliate.js';
 import { auth, requireAuth, requireRole } from '../middleware/auth.js';
 import { valid, validate } from '../middleware/validate.js';
 import { getAffiliate, listCommissions, payoutsFor, setPayoutMethod, summary, updateProfile, type PayoutMethodInput } from '../services/affiliates.js';
@@ -10,12 +11,15 @@ import { affiliateDto } from '../services/dto.js';
 export const meRouter = Router();
 meRouter.use(requireAuth, requireRole('affiliate'));
 
-// A paused partner can still see what they earned and were paid, but can't change anything:
-// their session may predate the pause, so this is checked on every write.
+// Sessions are stateless, so check the account behind the token on every request:
+// - gone (e.g. a demo database reset): 401, so the app signs out instead of getting stuck;
+// - paused: can still see what they earned and were paid, but can't change anything.
 meRouter.use(async (req, _res, next) => {
-  if (req.method === 'GET') return next();
-  const a = await getAffiliate(auth(req).id);
-  if (a.status !== 'active') return next(ApiError.forbidden('This partner account is paused. Write to partners@coreasana.com.'));
+  const a = await Affiliate.findById(auth(req).id, { status: 1 }).lean();
+  if (!a) return next(ApiError.unauthenticated('Your session has ended. Please log in again.'));
+  if (a.status !== 'active' && req.method !== 'GET') {
+    return next(ApiError.forbidden('This partner account is paused. Write to partners@coreasana.com.'));
+  }
   next();
 });
 

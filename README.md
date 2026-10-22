@@ -54,7 +54,7 @@ Health check: `curl localhost:4100/api/v1/health` returns `{"status":"ok","db":"
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | API with reload |
-| `npm test` | 35 tests against an in-memory MongoDB replica set (no Docker needed) |
+| `npm test` | 37 tests against an in-memory MongoDB replica set (no Docker needed) |
 | `npm run seed -- --reset` | Wipe the database and reseed the demo data |
 | `npm run simulate:order -- PRIYA10` | Act as the store: send a signed order webhook (`--qty 2`, `--refund <orderId>`) |
 | `npm run build && npm start` | Production build |
@@ -219,7 +219,7 @@ The Laravel side needs two things:
 
 ## Tests
 
-`npm test` runs 35 tests on a throwaway in-memory MongoDB replica set. They cover:
+`npm test` runs 37 tests on a throwaway in-memory MongoDB replica set. They cover:
 - webhook signatures and idempotency, including concurrent duplicates
 - the 12% calculation and the hold period
 - self-referral and high-value flags

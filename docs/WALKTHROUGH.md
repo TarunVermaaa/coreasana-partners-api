@@ -3,8 +3,10 @@
 One partner's sale, followed from signup to money in their account, across the app and the dashboard. Every step uses the seeded demo data; the password for all demo accounts is `Demo@1234`.
 
 You need:
-- the **app**: the APK on an Android phone, or `npx expo start --web` in `partners-app`
-- the **dashboard**: the live URL, or `npm run dev` in `partners-dashboard`
+- the **app**: the [APK](https://github.com/TarunVermaaa/coreasana-partners-app/releases/latest) on an Android phone, or `npx expo start --web` in `partners-app`
+- the **dashboard**: https://coreasana-partners-dashboard.onrender.com, or `npm run dev` in `partners-dashboard`
+
+A 74-second screen recording of exactly this flow (app and dashboard side by side) is attached to the [app release](https://github.com/TarunVermaaa/coreasana-partners-app/releases/latest).
 
 ## 1. A teacher joins (app, about 1 minute)
 

@@ -10,6 +10,16 @@ It is one of three repositories:
 | [coreasana-partners-app](https://github.com/TarunVermaaa/coreasana-partners-app) | React Native (Expo) app for partners. Join, share a code, track earnings and payouts. Ships as an APK. |
 | [coreasana-partners-dashboard](https://github.com/TarunVermaaa/coreasana-partners-dashboard) | React web dashboard for the affiliate team and finance. Review and release commissions, run payouts. |
 
+## Try it live
+
+| | |
+| --- | --- |
+| Dashboard (affiliate team and finance) | https://coreasana-partners-dashboard.onrender.com |
+| Partner app (Android APK) | [Download from the latest release](https://github.com/TarunVermaaa/coreasana-partners-app/releases/latest) |
+| API | https://coreasana-partners-api.onrender.com/api/v1/health |
+
+Demo logins use the password `Demo@1234`: `ops@partners.demo`, `finance@partners.demo`, `admin@partners.demo` (dashboard) and `priya@partners.demo` (app). The servers are on Render's free plan, so the first request after a quiet spell can take about a minute while the API wakes up.
+
 **Walkthrough of the happy path (5 minutes):** [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md)
 
 ---
